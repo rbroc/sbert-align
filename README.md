@@ -11,15 +11,18 @@ You can do so by typing:
 python3 -m venv PATH_TO_ENV
 source PATH_TO_ENV/bin/activate
 ```
-Replace PATH_TO_ENV with path for virtual environment
+Replace `PATH_TO_ENV` with path for virtual environment
 
 2. Install requirements
 ```pip install -r requirements.txt```
 
-3. Run the `align.py` script, e.g.,:
+3. Run the `align.py` script.
+
 `python3 align.py --lag 1 --model all-mpnet-base-v2`.
-For this to work, you need to have a `transcripts.tsv` file in the `data` folder.
-Outputs are saved in `outputs` folder.
+
+Arguments are customizable.
+
+Note that the script will be looking for a `transcripts.tsv` file in the `data` folder, and outputs will be saved in an `outputs` folder.
 
 4. Deactivate once you're done, by running ```deactivate```.
 
