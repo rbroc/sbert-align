@@ -38,7 +38,7 @@ def main(model_id, lag, pair_type):
 
     # Compute expected size
     exp_size = (data.groupby(['ChildID',
-                              'Visit'])['Transcript'].count() - lag).sum()
+                              'Visit'])['Transcript'].count() - lag).clip(lower=0).sum()
 
     # Get lagged time series
     if pair_type == 'true':

@@ -4,9 +4,9 @@
 
 for lag in 1 2 3
 do
-    for model in all-mpnet-base-v2 #all-MiniLM-L6-v2
+    for model in all-MiniLM-L6-v2 all-mpnet-base-v2
     do
-        for ptype in true surrogate
+        for ptype in surrogate true
         do
             python3 align.py --lag $lag --model $model --pair-type $ptype
         done
