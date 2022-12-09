@@ -21,8 +21,6 @@ def main(model_id, lag, pair_type):
     # Check that lag is fixed
     if pair_type not in ['surrogate', 'true']:
         raise ValueError('pair_type not valid')
-    if (pair_type == 'surrogate') and (lag != 1):
-        raise ValueError('lag must be 1 for surrogate pairs')
 
     # Define outpath
     OUTPATH = Path('outputs')
