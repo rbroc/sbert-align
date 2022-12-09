@@ -32,6 +32,6 @@ Replace PATH_TO_ENV with path for virtual environment
     - Transcript: text
     - Turn; ChildID; Visit; Speaker (repeated)
 
-- Output: ChildID, Visit, Turn, SemanticAlignment, Direction.
+- Output: ChildID, Visit, Turn, SemanticAlignment, AlignmentType.
 
 - Surrogate pairs analysis: [Il secondo passo sarebbe fare lo stesso su un subset delle surrogate pairs. Le surrogate pairs sono qui: https://www.dropbox.com/sh/4zpghkadqogmq51/AADmFaZIveT-SVcKW-C0hhF5a?dl=0 (I file che cominciano con dS, separati per Gruppo diagnostic e visita). Secondo me prendere 30-50 childID at random da dS_ASD1_udpiped e 30-50 da dS_TD1_udpiped e poi analizzare solo quelli (anche nelle visite successive) dovrebbe bastare]

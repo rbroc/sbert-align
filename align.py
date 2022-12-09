@@ -1,34 +1,67 @@
 import pandas as pd
 import sentence_transformers as st
 import numpy as np
-import swifter
+from pathlib import Path
+import argparse
 
-# Read in and import
-df = pd.read_csv('data/transcripts.txt', sep='\t')
-df = df.sort_values(by=['ChildID', 'Visit', 'Turn']).reset_index()
-df.drop([f'V{i}' for i in range(2,302)], axis=1, inplace=True)
-lagged = df.shift(1)
-for c in ['Transcript', 'Visit', 'Speaker', 'ChildID']:
-    df[f'lagged_{c}'] = lagged[c]
-df.dropna(subset=['lagged_Transcript'], inplace=True)
 
-# Compute alignment
-model = st.SentenceTransformer('all-MiniLM-L6-v2')
+parser = argparse.ArgumentParser()
+parser.add_argument('model', type=str, default='all-mpnet-base-v2',
+                    help='''Model name, models available at: 
+                            https://www.sbert.net/docs/pretrained_models.html''')
+parser.add_argument('--lag', type=int, default=1,
+                    help= 'Alignment (e.g., 1 computes for previous turn''')
 
-def _get_encoding(row):
-    enc_0 = model.encode(row['Transcript'])
-    enc_1 = model.encode(row['lagged_Transcript'])
-    sim = round(float(st.util.cos_sim(enc_0, enc_1)),4)
-    return sim
+args = parser.parse_args()
 
-# Add metadata
-df['SemanticAlignment'] = df.swifter.apply(_get_encoding, axis=1)
-df['AlignmentType'] = np.where(df['Speaker']=='MOT',
-                               'caregiver2child',
-                               'child2caregiver')
 
-# Keep rows where lagged and reference transcript have same ID and Visit
-df = df[(df['Visit']==df['lagged_Visit']) &
-        (df['ChildID']==df['lagged_ChildID'])]
+def main(model_id, lag):
+    ''' Full pipeline for alignment extraction '''
 
-# Remove non-consecutive turns and visits
+    outpath = Path('outputs') / f'model-{model_id}_lag-{lag}.tsv'
+
+    # Read in and import
+    print('*** Preprocessing data ***')
+    data = pd.read_csv('data/transcripts.txt', sep='\t')
+    data = data.sort_values(by=['ChildID', 'Visit', 'Turn']).reset_index().iloc[:3000]
+    data.drop([f'V{i}' for i in range(2,302)], axis=1, inplace=True)
+    lagged = data.shift(1)
+    for c in ['Transcript', 'Visit', 'Speaker', 'ChildID']:
+        data[f'lagged_{c}'] = lagged[c]
+    data.dropna(subset=['lagged_Transcript'], inplace=True)
+
+    # Define model and similarity function
+    model = st.SentenceTransformer(model_id)
+    def _get_encoding(row):
+        enc_0 = model.encode(row['Transcript'].tolist())
+        enc_1 = model.encode(row['lagged_Transcript'].tolist())
+        sim = st.util.cos_sim(enc_0, enc_1).numpy()
+        return sim[np.diag_indices(sim.shape[0])].round(4)
+
+    # Extract alignment
+    print('*** Extracting alignment ***')
+    grouper = data.groupby(['ChildID', 'Visit'])
+    encoded = grouper.apply(_get_encoding).reset_index().explode(0)[0]
+    data['SemanticAlignment'] = encoded.tolist()
+
+    # Add metadata and remove spurious pairs
+    data['AlignmentType'] = np.where(data['Speaker']=='MOT',
+                                    'caregiver2child',
+                                    'child2caregiver')
+    data = data[(data['Visit']==data['lagged_Visit']) &
+                (data['ChildID']==data['lagged_ChildID'])]
+    data['Lag'] = lag
+    data['ModelId'] = model_id
+
+    # Remove redundant columns
+    data = data[['ChildID', 'Visit', 'Turn',
+                 'Lag', 'ModelId',
+                 'SemanticAlignment',
+                 'AlignmentType']]
+    data.to_csv(outpath, sep='\t', index=False)
+
+
+if __name__=='__main__':
+    args = parser.parse_args()
+    main(args.model, args.lag)
+
