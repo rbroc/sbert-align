@@ -48,7 +48,7 @@ def main(model_id, lag, pair_type):
 
     # Get lagged time series
     if pair_type == 'true':
-        data = data.sort_values(by=['ChildID', 'Visit', 'Turn']).reset_index()# .iloc[:1000,:]
+        data = data.sort_values(by=['ChildID', 'Visit', 'Turn']).reset_index().iloc[:1000,:]
     data.drop([f'V{i}' for i in range(2,302)], axis=1, inplace=True)
     lagged = data.shift(1)
     for c in ['Transcript', 'Visit', 'Speaker', 'ChildID']:

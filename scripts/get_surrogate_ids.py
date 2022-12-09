@@ -25,7 +25,7 @@ def main(n_ids):
     fs = glob.glob(str(Path('data') / 'raw' / '*'))
     dfs = []
     for i,f in enumerate(fs):
-        print(f'Processing {i} out of {len(fs)}')
+        print(f'Processing {i+1} out of {len(fs)}')
         df = pd.read_csv(f)
         df = df[df['ChildID'].isin(ref_ids)]
         dfs.append(df)
