@@ -44,19 +44,19 @@ def main(model_id, lag, pair_type):
 
     # Compute expected size
     exp_size = (data.groupby(['ChildID',
-                                'Visit'])['Transcript'].count() - lag).sum()
+                              'Visit'])['Transcript'].count() - lag).sum()
 
     # Get lagged time series
     if pair_type == 'true':
         data = data.sort_values(by=['ChildID', 'Visit', 'Turn']).reset_index()
     data.drop([f'V{i}' for i in range(2,302)], axis=1, inplace=True)
-    lagged = data.shift(1)
+    lagged = data.shift(lag)
     for c in ['Transcript', 'Visit', 'Speaker', 'ChildID']:
         data[f'lagged_{c}'] = lagged[c]
     data.dropna(subset=['lagged_Transcript'], inplace=True)
     data = data[(data['Visit']==data['lagged_Visit']) &
-                (data['ChildID']==data['lagged_ChildID']) &
-                (data['Speaker']!=data['lagged_Speaker'])]
+                (data['ChildID']==data['lagged_ChildID'])]
+    print(data.shape[0], exp_size)
     assert data.shape[0] ==  exp_size
 
     # Define model and similarity function
@@ -75,10 +75,15 @@ def main(model_id, lag, pair_type):
     data['SemanticAlignment'] = encoded.tolist()
 
     # Add metadata and remove spurious pairs
-    data['AlignmentType'] = np.where(data['Speaker']=='MOT',
-                                    'caregiver2child',
-                                    'child2caregiver')
-
+    conditions = [
+    (data['Speaker']=='MOT' & data['lagged_Speaker']=='MOT'),
+    (data['Speaker']=='MOT' & data['lagged_Speaker']=='CHI'),
+    (data['Speaker']=='CHI' & data['lagged_Speaker']=='CHI'),
+    (data['Speaker']=='CHI' & data['lagged_Speaker']=='MOT'),
+    ]
+    choices = ["caregiver2caregiver", "caregiver2child",
+                "child2child", "child2caregiver"]
+    data['AlignmentType'] =  np.select(conditions, choices)
     data['Lag'] = lag
     data['ModelId'] = model_id
 
