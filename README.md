@@ -2,8 +2,9 @@
 Compute parent-child alignment using SentenceBERT.
 Available models can be found at: https://www.sbert.net/docs/pretrained_models.html
 
-### To use this code
-1. Create a virtual environment (not necessary)
+### Usage
+1. Create a virtual environment (not necessary).
+
 You can do so by typing:
 
 ``` python3 -m venv PATH_TO_ENV
@@ -14,7 +15,12 @@ Replace PATH_TO_ENV with path for virtual environment
 2. Install requirements
 ```pip install -r requirements.txt```
 
-3. Deactivate once you're done
+3. Run the `align.py` script, e.g.,:
+`python3 align.py --lag 1 --model all-mpnet-base-v2`.
+For this to work, you need to have a `transcripts.tsv` file in the `data` folder.
+Outputs are saved in `outputs` folder.
+
+4. Deactivate once you're done
 ```deactivate```
 
 ### Instructions

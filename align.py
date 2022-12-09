@@ -18,11 +18,13 @@ args = parser.parse_args()
 def main(model_id, lag):
     ''' Full pipeline for alignment extraction '''
 
-    outpath = Path('outputs') / f'model-{model_id}_lag-{lag}.tsv'
+    outpath = Path('outputs')
+    outpath.mkdir(exist_ok=True)
+    outfile = outpath / f'model-{model_id}_lag-{lag}.tsv'
 
     # Read in and import
     print('*** Preprocessing data ***')
-    data = pd.read_csv('data/transcripts.txt', sep='\t')
+    data = pd.read_csv('data/transcripts.tsv', sep='\t')
     data = data.sort_values(by=['ChildID', 'Visit', 'Turn']).reset_index().iloc[:3000]
     data.drop([f'V{i}' for i in range(2,302)], axis=1, inplace=True)
     lagged = data.shift(1)
@@ -58,10 +60,9 @@ def main(model_id, lag):
                  'Lag', 'ModelId',
                  'SemanticAlignment',
                  'AlignmentType']]
-    data.to_csv(outpath, sep='\t', index=False)
+    data.to_csv(str(outfile), sep='\t', index=False)
 
 
 if __name__=='__main__':
     args = parser.parse_args()
     main(args.model, args.lag)
-
