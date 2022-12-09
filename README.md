@@ -7,8 +7,10 @@ Available models can be found at: https://www.sbert.net/docs/pretrained_models.h
 
 You can do so by typing:
 
-``` python3 -m venv PATH_TO_ENV
-source PATH_TO_ENV/bin/activate```
+``` 
+python3 -m venv PATH_TO_ENV
+source PATH_TO_ENV/bin/activate
+```
 Replace PATH_TO_ENV with path for virtual environment
 
 2. Install requirements
