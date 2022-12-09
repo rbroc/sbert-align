@@ -1,0 +1,2 @@
+defaults:
+  - model: 'all-mpnet-base-v2'
