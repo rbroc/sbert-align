@@ -6,33 +6,59 @@ import argparse
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('model', type=str, default='all-mpnet-base-v2',
+parser.add_argument('--model', type=str, default='all-mpnet-base-v2',
                     help='''Model name, models available at: 
                             https://www.sbert.net/docs/pretrained_models.html''')
 parser.add_argument('--lag', type=int, default=1,
                     help= 'Alignment (e.g., 1 computes for previous turn''')
+parser.add_argument('--pair-type', type=str, default='true',
+                    help= '"Surrogate" or "true" pairs')
 
-args = parser.parse_args()
 
-
-def main(model_id, lag):
+def main(model_id, lag, pair_type):
     ''' Full pipeline for alignment extraction '''
 
-    outpath = Path('outputs')
-    outpath.mkdir(exist_ok=True)
-    outfile = outpath / f'model-{model_id}_lag-{lag}.tsv'
+    # Check that lag is fixed
+    if (pair_type == 'surrogates') and (lag != 1):
+        raise ValueError('lag must be 1 for surrogate pairs')
+
+    # Define outpath
+    OUTPATH = Path('outputs')
+    OUTPATH.mkdir(exist_ok=True)
+    if pair_type == 'true':
+        outfile = OUTPATH / f'{pair_type}_lag-{lag}_model-{model_id}.txt'
+    else:
+        outfile = OUTPATH / f'{pair_type}_model-{model_id}.txt'
 
     # Read in and import
     print('*** Preprocessing data ***')
-    data = pd.read_csv('data/transcripts.tsv', sep='\t')
-    data = data.sort_values(by=['ChildID', 'Visit', 'Turn']).reset_index().iloc[:3000]
+    if pair_type == 'true':
+        DPATH = Path('data') / 'transcripts.txt'
+    elif pair_type == 'surrogates':
+        DPATH = Path('data') / 'surrogates.txt'
+    else:
+        raise ValueError('''pair_type should be "transcript" or "surrogate"''')
+    data = pd.read_csv(str(DPATH), sep='\t')
+
+    # Compute expected size
+    exp_size = (data.groupby(['ChildID',
+                                'Visit'])['Transcript'].count() - lag).sum()
+
+    # Get lagged time series
+    if pair_type == 'true':
+        data = data.sort_values(by=['ChildID', 'Visit', 'Turn']).reset_index()# .iloc[:1000,:]
     data.drop([f'V{i}' for i in range(2,302)], axis=1, inplace=True)
     lagged = data.shift(1)
     for c in ['Transcript', 'Visit', 'Speaker', 'ChildID']:
         data[f'lagged_{c}'] = lagged[c]
     data.dropna(subset=['lagged_Transcript'], inplace=True)
+    data = data[(data['Visit']==data['lagged_Visit']) &
+                (data['ChildID']==data['lagged_ChildID']) &
+                (data['Speaker']!=data['lagged_Speaker'])]
+    assert data.shape[0] ==  exp_size
 
     # Define model and similarity function
+    print('*** Preparing SentenceBERT model ***')
     model = st.SentenceTransformer(model_id)
     def _get_encoding(row):
         enc_0 = model.encode(row['Transcript'].tolist())
@@ -50,8 +76,7 @@ def main(model_id, lag):
     data['AlignmentType'] = np.where(data['Speaker']=='MOT',
                                     'caregiver2child',
                                     'child2caregiver')
-    data = data[(data['Visit']==data['lagged_Visit']) &
-                (data['ChildID']==data['lagged_ChildID'])]
+
     data['Lag'] = lag
     data['ModelId'] = model_id
 
@@ -65,4 +90,4 @@ def main(model_id, lag):
 
 if __name__=='__main__':
     args = parser.parse_args()
-    main(args.model, args.lag)
+    main(args.model, args.lag, args.pair_type)

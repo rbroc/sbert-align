@@ -1,6 +1,11 @@
 # sbert-align
 Compute parent-child alignment using SentenceBERT.
 
+### TODO:
+[] Make synthetic raw data
+[] Compute alignment for surrogate pairs
+[] Rerun
+
 ### Usage
 1. Create a virtual environment (not necessary).
 
@@ -21,7 +26,7 @@ Replace `PATH_TO_ENV` with path for virtual environment
 
 Arguments are customizable.
 
-Note that the script will be looking for a `transcripts.tsv` file in the `data` folder, and outputs will be saved in an `outputs` folder.
+Note that the script will be looking for a `transcripts.txt` file in the `data` folder, and outputs will be saved in an `outputs` folder.
 
 4. Deactivate once you're done, by running ```deactivate```.
 
