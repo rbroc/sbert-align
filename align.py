@@ -12,14 +12,16 @@ parser.add_argument('--model', type=str, default='all-mpnet-base-v2',
 parser.add_argument('--lag', type=int, default=1,
                     help= 'Alignment (e.g., 1 computes for previous turn''')
 parser.add_argument('--pair-type', type=str, default='true',
-                    help= '"Surrogate" or "true" pairs')
+                    help= '"surrogate" or "true" pairs')
 
 
 def main(model_id, lag, pair_type):
     ''' Full pipeline for alignment extraction '''
 
     # Check that lag is fixed
-    if (pair_type == 'surrogates') and (lag != 1):
+    if pair_type not in ['surrogate', 'true']:
+        raise ValueError('pair_type not valid')
+    if (pair_type == 'surrogate') and (lag != 1):
         raise ValueError('lag must be 1 for surrogate pairs')
 
     # Define outpath
