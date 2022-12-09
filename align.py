@@ -18,12 +18,6 @@ parser.add_argument('--pair-type', type=str, default='true',
 def main(model_id, lag, pair_type):
     ''' Full pipeline for alignment extraction '''
 
-    # Check that lag is fixed
-    if pair_type not in ['surrogate', 'true']:
-        raise ValueError('pair_type not valid')
-    if (pair_type == 'surrogate') and (lag != 1):
-        raise ValueError('lag must be 1 for surrogate pairs')
-
     # Define outpath
     OUTPATH = Path('outputs')
     OUTPATH.mkdir(exist_ok=True)
@@ -36,10 +30,10 @@ def main(model_id, lag, pair_type):
     print('*** Preprocessing data ***')
     if pair_type == 'true':
         DPATH = Path('data') / 'transcripts.txt'
-    elif pair_type == 'surrogates':
+    elif pair_type == 'surrogate':
         DPATH = Path('data') / 'surrogates.txt'
     else:
-        raise ValueError('''pair_type should be "transcript" or "surrogate"''')
+        raise ValueError('''pair_type should be "true" or "surrogate"''')
     data = pd.read_csv(str(DPATH), sep='\t')
 
     # Compute expected size
