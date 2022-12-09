@@ -50,7 +50,6 @@ def main(model_id, lag, pair_type):
     data.dropna(subset=['lagged_Transcript'], inplace=True)
     data = data[(data['Visit']==data['lagged_Visit']) &
                 (data['ChildID']==data['lagged_ChildID'])]
-    print(data.shape[0], exp_size)
     assert data.shape[0] ==  exp_size
 
     # Define model and similarity function
