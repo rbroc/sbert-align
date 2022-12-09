@@ -69,13 +69,15 @@ def main(model_id, lag, pair_type):
 
     # Add metadata and remove spurious pairs
     conditions = [
-    (data['Speaker']=='MOT' & data['lagged_Speaker']=='MOT'),
-    (data['Speaker']=='MOT' & data['lagged_Speaker']=='CHI'),
-    (data['Speaker']=='CHI' & data['lagged_Speaker']=='CHI'),
-    (data['Speaker']=='CHI' & data['lagged_Speaker']=='MOT'),
+    ((data['Speaker']=='MOT') & (data['lagged_Speaker']=='MOT')),
+    ((data['Speaker']=='MOT') & (data['lagged_Speaker']=='CHI')),
+    ((data['Speaker']=='CHI') & (data['lagged_Speaker']=='CHI')),
+    ((data['Speaker']=='CHI') & (data['lagged_Speaker']=='MOT')),
     ]
-    choices = ["caregiver2caregiver", "caregiver2child",
-                "child2child", "child2caregiver"]
+    choices = ["caregiver2caregiver",
+               "caregiver2child",
+                "child2child",
+                "child2caregiver"]
     data['AlignmentType'] =  np.select(conditions, choices)
     data['Lag'] = lag
     data['ModelId'] = model_id

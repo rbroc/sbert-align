@@ -1,8 +1,5 @@
 # sbert-align
-Compute parent-child alignment using SentenceBERT.
-
-### TODO:
-[] Make synthetic raw data
+Compute parent-child alignment using SentenceBERT
 
 ### Usage
 1. Create a virtual environment (not necessary).
@@ -34,3 +31,7 @@ Note that the script will be looking for a `transcripts.txt` or `surrogates.txt`
 - `ModelId`: Which SentenceBERT checkpoint we are using, see https://www.sbert.net/docs/pretrained_models.html for available models; 
 - `SemanticAlignment`: cosine similarity between sequence encodings;
 - `AlignmentType`: 'child2caregiver' or 'caregiver2child'
+
+
+### Potential expansion:
+- Make synthetic raw data for better reproducibility
