@@ -18,9 +18,7 @@ def main(n_ids):
         ref_df = pd.read_csv(str(REF_PATH))
         ref_ids += random.sample(ref_df.ChildID.unique().tolist(),
                                  k=n_ids)
-        print(ref_ids)
-        
-    with open('sampled_ids.txt', 'w') as fh:
+    with open(Path('data') / 'sampled_ids.txt', 'w') as fh:
         fh.write('\n'.join(ref_ids))
 
     # Process other surrogate pairs and reduce
