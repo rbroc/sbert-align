@@ -8,9 +8,8 @@ Available models can be found at: https://www.sbert.net/docs/pretrained_models.h
 You can do so by typing:
 
 ``` python3 -m venv PATH_TO_ENV
-source PATH_TO_ENV/bin/activate
+source PATH_TO_ENV/bin/activate```
 Replace PATH_TO_ENV with path for virtual environment
-```
 
 2. Install requirements
 ```pip install -r requirements.txt```
@@ -20,8 +19,7 @@ Replace PATH_TO_ENV with path for virtual environment
 For this to work, you need to have a `transcripts.tsv` file in the `data` folder.
 Outputs are saved in `outputs` folder.
 
-4. Deactivate once you're done
-```deactivate```
+4. Deactivate once you're done, by running ```deactivate```.
 
 ### Instructions
 - Sort by child, visit, turn. Compute cosine similarity among all adjacent utterances, marking if it's child2mot, or mot2child. Make sure not to cross visit boundaries
