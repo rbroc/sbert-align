@@ -21,10 +21,7 @@ def main(model_id, lag, pair_type):
     # Define outpath
     OUTPATH = Path('outputs')
     OUTPATH.mkdir(exist_ok=True)
-    if pair_type == 'true':
-        outfile = OUTPATH / f'{pair_type}_lag-{lag}_model-{model_id}.txt'
-    else:
-        outfile = OUTPATH / f'{pair_type}_model-{model_id}.txt'
+    outfile = OUTPATH / f'{pair_type}_lag-{lag}_model-{model_id}.txt'
 
     # Read in and import
     print('*** Preprocessing data ***')
