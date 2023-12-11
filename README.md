@@ -26,12 +26,11 @@ Note that the script will be looking for a `transcripts.txt` or `surrogates.txt`
 4. Deactivate once you're done, by running ```deactivate```.
 
 ### Output columns
-- Turn metadata: (`ChildID`, `Visit`, `Turn`)
+- Turn metadata: (`ChildID|ID`, `Visit`, `Turn`)
 - `Lag`: 1 if alignment is computed with previous turn, 2 if two turns back. Note that even numbers compute alignment with previous turns from same speaker;
 - `ModelId`: Which SentenceBERT checkpoint we are using, see https://www.sbert.net/docs/pretrained_models.html for available models; 
 - `SemanticAlignment`: cosine similarity between sequence encodings;
 - `AlignmentType`: 'child2caregiver' or 'caregiver2child'
-
 
 ### Potential expansion:
 - Make synthetic raw data for better reproducibility
