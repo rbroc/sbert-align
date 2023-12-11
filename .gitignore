@@ -3,3 +3,5 @@ data/transcripts.txt
 data/surrogates.txt
 data/clean*
 postprocess.py
+# outputs/clean*
+# outputs/processed*
