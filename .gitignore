@@ -5,3 +5,4 @@ data/clean*
 postprocess.py
 outputs/clean*
 outputs/processed*
+.DS_Store
