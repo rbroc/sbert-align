@@ -32,5 +32,10 @@ Note that the script will be looking for a `transcripts.txt` or `surrogates.txt`
 - `SemanticAlignment`: cosine similarity between sequence encodings;
 - `AlignmentType`: 'child2caregiver' or 'caregiver2child'
 
+### Notes on study 2
+- We keep the second iteration of a conversation, when the Turn ID is repeated
+- Turns where previous index is missing are not coded for current-to-1back alignment, and for 1back-to-2back alignment
+- Turns where the preceding turn does not follow the previous one are not coded for  1back-to-2back alignment
+
 ### Potential expansion:
 - Make synthetic raw data for better reproducibility
