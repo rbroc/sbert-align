@@ -39,18 +39,27 @@ def main(model_id, lag, fname, pair_type, short_output=False):
     caregiver_id = list(set(speakers) - set([child_id]))[0]
 
     # Compute expected size
-    exp_size = (data.groupby([id_col,
-                              'Visit'])['Transcript'].count() - lag).clip(lower=0).sum()
+    exp_cols = [id_col, 'Visit']
+    if 'Task' in data.columns:
+        exp_cols.append('Task')
+    exp_size = (data.groupby(exp_cols)['Transcript'].count() - lag).clip(lower=0).sum()
 
     # Get lagged time series
     if pair_type != 'surrogate':
-        data = data.sort_values(by=[id_col, 'Visit', 'Turn']).reset_index()
+        sort_cols = exp_cols + ['Turn']
+        data = data.sort_values(by=sort_cols).reset_index()
+
     lagged = data.shift(lag)
-    for c in ['Transcript', 'Visit', 'Speaker', id_col]:
+    lagged_cols = ['Transcript', 'Visit', 'Speaker', id_col]
+    if 'Task' in data.columns:
+        lagged_cols.append('Task')
+    for c in lagged_cols:
         data[f'lagged_{c}'] = lagged[c]
     data.dropna(subset=['lagged_Transcript'], inplace=True)
     data = data[(data['Visit']==data['lagged_Visit']) &
                 (data[id_col]==data[f'lagged_{id_col}'])]
+    if 'Task' in data.columns:
+        data = data[data['Task']==data['lagged_Task']]
     assert data.shape[0] ==  exp_size
 
     # Define model and similarity function
@@ -64,11 +73,14 @@ def main(model_id, lag, fname, pair_type, short_output=False):
 
     # Extract alignment
     print('*** Extracting alignment ***')
-    grouper = data.groupby([id_col, 'Visit'])
+    grouping = [id_col, 'Visit']
+    if 'Task' in data.columns:
+        grouping.append('Task')
+    grouper = data.groupby(grouping)
     encoded = grouper.apply(_get_encoding).reset_index().explode(0)[0]
     data['SemanticAlignment'] = encoded.tolist()
 
-    # Add metadata and remove spurious pairs
+    # Add metadata on directionality of alignment
     conditions = [
     ((data['Speaker']==caregiver_id) & (data['lagged_Speaker']==caregiver_id)),
     ((data['Speaker']==caregiver_id) & (data['lagged_Speaker']==child_id)),
