@@ -16,7 +16,7 @@ def main():
     df['alignment_current_to_1back'] = current_to_previous
     df['alignment_1back_to_2back'] = previous
 
-    # Make sure we are only keepin stuff from the same visit
+    # Make sure we are only keeping stuff from the same visit
     df['lagged_Visit'] = lagged['Visit']
     df['lagged_ID'] = lagged['ID']
     df['lagged_Task'] = lagged['Task']
@@ -25,7 +25,7 @@ def main():
             (df['Task']==df['lagged_Task'])]
     df['alignment_current_to_1back_type'] = df['AlignmentType']
     df['alignment_1back_to_2back_type'] = np.where(df['alignment_current_to_1back_type']=='child2caregiver',
-                                                   'caregiver2child', 'child2caregiver')
+                                                      'caregiver2child', 'child2caregiver')
     df.drop(['lagged_Visit',
              'lagged_Transcript', 
              'lagged_Task',
@@ -42,7 +42,8 @@ def main():
                          df[k])
         
     # Remove weird trial
-    df = df[~((df['ID']==9611) & (df['Visit']==1) & (df['Task']=='Questions'))]
+    print(df['alignment_current_to_1back_type'].unique())
+    print(df['alignment_1back_to_2back_type'].unique())
 
     # Save
     df.drop('AlignmentType', axis=1).to_csv('../outputs/processed_model-all-mpnet-base-v2.txt',

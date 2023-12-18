@@ -2,7 +2,7 @@ import pandas as pd
 import json
 
 def preprocess():
-    df = pd.read_csv('../data/clean_011223.csv')
+    df = pd.read_csv('../data/clean.csv')
     id_vars = ['ID', 'Visit', 'Task', 'Turn']
     df = df.groupby(id_vars, as_index=False).apply(lambda x: x.sort_values(by='StartTime').tail(1))
     df.to_csv('../data/clean.csv')
